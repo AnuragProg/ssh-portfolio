@@ -2,35 +2,36 @@ package ui
 
 import (
 	"github.com/AnuragProg/ssh-portfolio/ui/filler"
+	"github.com/AnuragProg/ssh-portfolio/ui/model"
 	notfound "github.com/AnuragProg/ssh-portfolio/ui/not_found"
 	"github.com/AnuragProg/ssh-portfolio/ui/overview"
+	"github.com/charmbracelet/bubbles/cursor"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 const (
 	ContentPageHeight = 25
-	ContentPageWidth  = 70
+	ContentPageWidth  = 90
 )
 
 type ContentPage string
 
 const (
-	Overview   = "Overview"
-	Experience = "Experience"
-	Projects   = "Projects"
-	Contact    = "Contact"
+	Overview   = "overview"
+	Experience = "experience"
+	Projects   = "projects"
+	Contact    = "contact"
 )
 
 var ContentPages = [4]ContentPage{Overview, Experience, Projects, Contact}
-
 
 type UI struct {
 	/** BELOW SECTION IS REFERENCES TO STUFF WE NEED **/
 	tea.Model
 
-	renderer *lipgloss.Renderer
-	ContentPageMap  map[ContentPage]tea.Model // for routing between pages 
+	renderer       *lipgloss.Renderer
+	ContentPageMap map[ContentPage]model.ResumableModel // for routing between pages
 
 	/** BELOW SECTION IS ABOUT THE UI**/
 	height int
@@ -49,20 +50,46 @@ func NewUI(renderer *lipgloss.Renderer, height, width int) UI {
 	return UI{
 
 		renderer: renderer,
-		ContentPageMap: map[ContentPage]tea.Model{
+		ContentPageMap: map[ContentPage]model.ResumableModel{
 			Overview: overview.NewOverview(renderer, ContentPageHeight, ContentPageWidth),
 		},
 
 		height: height,
-		width: width,
+		width:  width,
 
 		navbar: NewNavBar(renderer),
 		help:   NewHelpMenu(renderer),
 	}
 }
 
+func (ui *UI) GetCurrentContentPage() (model.ResumableModel, bool) {
+	model, ok := ui.ContentPageMap[ContentPages[ui.navbar.(NavBar).SelectedNavItemIdx]]
+	return model, ok
+}
+func (ui *UI) SetCurrentContentPage(model model.ResumableModel) {
+	ui.ContentPageMap[ContentPages[ui.navbar.(NavBar).SelectedNavItemIdx]] = model
+}
+
 func (ui UI) Init() tea.Cmd {
-	return nil
+	cmds := []tea.Cmd{}
+	
+	//header cmds
+	cmds = append(cmds, ui.navbar.Init())
+
+	//content cmds
+	currentContentPage, ok := ui.GetCurrentContentPage()
+	if ok {
+		cmds = append(cmds, currentContentPage.Init())
+	}
+
+	// footer cmds
+	cmds = append(cmds, ui.help.Init())
+
+
+	// miscellaneous cmds
+	cmds = append(cmds, cursor.Blink)
+
+	return tea.Batch(cmds...)
 }
 
 func (ui UI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -82,8 +109,19 @@ func (ui UI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	}
 
+	/* NAVIGATION START */
 	ui.navbar, cmd = ui.navbar.Update(msg)
 	cmds = append(cmds, cmd)
+	/* NAVIGATION END */
+
+	currentContentPage, ok := ui.GetCurrentContentPage()
+	if ok {
+		currentContentPage = currentContentPage.Resume()
+		updatedContentPage, cmd := currentContentPage.Update(msg)
+		ui.SetCurrentContentPage(updatedContentPage.(model.ResumableModel))
+		cmds = append(cmds, cmd)
+	}
+
 	ui.help, cmd = ui.help.Update(msg)
 	cmds = append(cmds, cmd)
 
@@ -99,11 +137,10 @@ func (ui UI) View() string {
 		contentPage = notfound.NewNotFound(ui.renderer, ContentPageHeight, ContentPageWidth)
 	}
 
-
 	content := ui.renderer.NewStyle().
 		Height(ContentPageHeight).
 		Width(ContentPageWidth).
-		Border(lipgloss.RoundedBorder()).
+		// Border(lipgloss.RoundedBorder()).
 		Render(lipgloss.Place(ContentPageWidth, ContentPageHeight, lipgloss.Center, lipgloss.Center, contentPage.View()))
 
 	footer := ui.help.View()
@@ -115,7 +152,7 @@ func (ui UI) View() string {
 			header,
 			filler.HorizontalFiller(ui.renderer, 3),
 			content,
-		), 
+		),
 		filler.VerticalFiller(ui.renderer, 1),
 		footer,
 	)

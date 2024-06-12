@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
 	"github.com/AnuragProg/ssh-portfolio/ui"
 	"github.com/charmbracelet/wish"
@@ -34,6 +35,7 @@ func main() {
 		panic(err.Error())
 	}
 	defer sshServer.Shutdown(context.Background())
+
 
 	go func() {
 		if err := sshServer.ListenAndServe(); err != nil {
