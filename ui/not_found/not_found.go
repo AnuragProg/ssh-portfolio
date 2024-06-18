@@ -2,18 +2,16 @@ package notfound
 
 import (
 	"github.com/AnuragProg/ssh-portfolio/ui/color"
-	"github.com/AnuragProg/ssh-portfolio/ui/model"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 type NotFound struct {
 	renderer *lipgloss.Renderer
-	height, width int
 }
 
-func NewNotFound(renderer *lipgloss.Renderer,height, width int) NotFound {
-	return NotFound{renderer, height, width}
+func NewNotFound(renderer *lipgloss.Renderer) NotFound {
+	return NotFound{renderer}
 }
 
 func (nf NotFound) Init() tea.Cmd { return nil }
@@ -30,10 +28,3 @@ func (nf NotFound) View() string {
 }
 
 
-func (nf NotFound)Resume() model.ResumableModel {
-	return nf
-}
-
-func (nf NotFound)Pause() model.ResumableModel {
-	return nf
-}

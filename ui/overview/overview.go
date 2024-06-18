@@ -3,7 +3,6 @@ package overview
 import (
 	"github.com/AnuragProg/ssh-portfolio/ui/color"
 	"github.com/AnuragProg/ssh-portfolio/ui/filler"
-	"github.com/AnuragProg/ssh-portfolio/ui/model"
 	"github.com/charmbracelet/bubbles/cursor"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -11,11 +10,10 @@ import (
 
 type Overview struct {
 	renderer      *lipgloss.Renderer
-	height, width int
 	cursorModel   cursor.Model
 }
 
-func NewOverview(renderer *lipgloss.Renderer, height, width int) Overview {
+func NewOverview(renderer *lipgloss.Renderer) Overview {
 	cursorModel := cursor.New()
 	cursorModel.SetMode(cursor.CursorBlink)
 	cursorModel.SetChar(" ")
@@ -24,7 +22,6 @@ func NewOverview(renderer *lipgloss.Renderer, height, width int) Overview {
 	cursorModel.Focus()
 	return Overview{
 		renderer,
-		height, width,
 		cursorModel,
 	}
 }
@@ -94,11 +91,3 @@ func (o Overview) View() string {
 	)
 }
 
-
-func (o Overview) Resume() model.ResumableModel{
-	o.cursorModel.Focus()
-	return o
-}
-func (o Overview) Pause() model.ResumableModel {
-	return o
-}

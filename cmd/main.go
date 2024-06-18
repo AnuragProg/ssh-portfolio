@@ -5,7 +5,6 @@ import (
 	"log"
 	"net"
 	"os"
-	"time"
 
 	"github.com/AnuragProg/ssh-portfolio/ui"
 	"github.com/charmbracelet/wish"

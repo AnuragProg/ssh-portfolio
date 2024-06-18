@@ -1,8 +1,8 @@
 package ui
 
 import (
+	"github.com/AnuragProg/ssh-portfolio/ui/experience"
 	"github.com/AnuragProg/ssh-portfolio/ui/filler"
-	"github.com/AnuragProg/ssh-portfolio/ui/model"
 	notfound "github.com/AnuragProg/ssh-portfolio/ui/not_found"
 	"github.com/AnuragProg/ssh-portfolio/ui/overview"
 	"github.com/charmbracelet/bubbles/cursor"
@@ -31,7 +31,7 @@ type UI struct {
 	tea.Model
 
 	renderer       *lipgloss.Renderer
-	ContentPageMap map[ContentPage]model.ResumableModel // for routing between pages
+	ContentPageMap map[ContentPage]tea.Model
 
 	/** BELOW SECTION IS ABOUT THE UI**/
 	height int
@@ -50,8 +50,9 @@ func NewUI(renderer *lipgloss.Renderer, height, width int) UI {
 	return UI{
 
 		renderer: renderer,
-		ContentPageMap: map[ContentPage]model.ResumableModel{
-			Overview: overview.NewOverview(renderer, ContentPageHeight, ContentPageWidth),
+		ContentPageMap: map[ContentPage]tea.Model{
+			Overview: overview.NewOverview(renderer),
+			Experience: experience.NewExperience(renderer, ContentPageHeight, ContentPageWidth),
 		},
 
 		height: height,
@@ -62,11 +63,11 @@ func NewUI(renderer *lipgloss.Renderer, height, width int) UI {
 	}
 }
 
-func (ui *UI) GetCurrentContentPage() (model.ResumableModel, bool) {
+func (ui *UI) GetCurrentContentPage() (tea.Model, bool) {
 	model, ok := ui.ContentPageMap[ContentPages[ui.navbar.(NavBar).SelectedNavItemIdx]]
 	return model, ok
 }
-func (ui *UI) SetCurrentContentPage(model model.ResumableModel) {
+func (ui *UI) SetCurrentContentPage(model tea.Model) {
 	ui.ContentPageMap[ContentPages[ui.navbar.(NavBar).SelectedNavItemIdx]] = model
 }
 
@@ -116,9 +117,8 @@ func (ui UI) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	currentContentPage, ok := ui.GetCurrentContentPage()
 	if ok {
-		currentContentPage = currentContentPage.Resume()
 		updatedContentPage, cmd := currentContentPage.Update(msg)
-		ui.SetCurrentContentPage(updatedContentPage.(model.ResumableModel))
+		ui.SetCurrentContentPage(updatedContentPage)
 		cmds = append(cmds, cmd)
 	}
 
@@ -134,7 +134,7 @@ func (ui UI) View() string {
 
 	contentPage, ok := ui.ContentPageMap[ContentPages[ui.navbar.(NavBar).SelectedNavItemIdx]]
 	if !ok {
-		contentPage = notfound.NewNotFound(ui.renderer, ContentPageHeight, ContentPageWidth)
+		contentPage = notfound.NewNotFound(ui.renderer)
 	}
 
 	content := ui.renderer.NewStyle().
