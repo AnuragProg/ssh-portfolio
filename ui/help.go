@@ -11,10 +11,13 @@ import (
 type KeyMap struct {
 	help.KeyMap
 
-	Left  key.Binding
-	Right key.Binding
-	Quit  key.Binding
-	Help  key.Binding
+	Up   key.Binding
+	Down key.Binding
+	Quit key.Binding
+	Help key.Binding
+
+	ContentPageUp   key.Binding
+	ContentPageDown key.Binding
 }
 
 func (k KeyMap) ShortHelp() []key.Binding {
@@ -25,13 +28,13 @@ func (k KeyMap) ShortHelp() []key.Binding {
 
 func (k KeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
-		{k.Left, k.Right},
+		{k.Up, k.Down},
+		{k.ContentPageUp, k.ContentPageDown},
 		{k.Help, k.Quit},
 	}
 }
 
 type HelpMenu struct {
-
 	renderer *lipgloss.Renderer
 
 	keys KeyMap
@@ -42,13 +45,13 @@ func NewHelpMenu(renderer *lipgloss.Renderer) HelpMenu {
 	return HelpMenu{
 		renderer: renderer,
 		keys: KeyMap{
-			Left: key.NewBinding(
+			Up: key.NewBinding(
 				key.WithKeys("shift+tab"),
-				key.WithHelp("shift+tab", "go left"),
+				key.WithHelp("shift+tab", "go up"),
 			),
-			Right: key.NewBinding(
+			Down: key.NewBinding(
 				key.WithKeys("tab"),
-				key.WithHelp("tab", "go right"),
+				key.WithHelp("tab", "go down"),
 			),
 			Quit: key.NewBinding(
 				key.WithKeys("q", "ctrl+c"),
@@ -57,6 +60,14 @@ func NewHelpMenu(renderer *lipgloss.Renderer) HelpMenu {
 			Help: key.NewBinding(
 				key.WithKeys("?"),
 				key.WithHelp("?", "toggle help"),
+			),
+			ContentPageUp: key.NewBinding(
+				key.WithKeys("↑"),
+				key.WithHelp("↑/k", "scroll content up"),
+			),
+			ContentPageDown: key.NewBinding(
+				key.WithKeys("↓"),
+				key.WithHelp("↓/j", "scroll content down"),
 			),
 		},
 		help: help.New(),

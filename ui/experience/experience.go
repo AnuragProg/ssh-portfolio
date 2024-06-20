@@ -22,18 +22,24 @@ type Experience struct {
 }
 
 func NewExperience(renderer *lipgloss.Renderer, height, width int) Experience {
+	experiences := list.New(
+		[]list.Item{
+			experienceItem{"QuickGhy", "Android Developer Intern"},
+			experienceItem{"ISOStats", "Full Stack Developer Intern"},
+			experienceItem{"Contineu AI", "Full Stack Developer Intern"},
+		},
+		list.NewDefaultDelegate(),
+		width, height,
+	)
+
+	experiences.SetShowHelp(false)
+	experiences.SetShowTitle(false)
+	experiences.SetShowStatusBar(false)
+
 	return Experience{
 		renderer,
 		height, width,
-		list.New(
-			[]list.Item{
-				experienceItem{"QuickGhy", "Android Developer Intern"},
-				experienceItem{"ISOStats", "Full Stack Developer Intern"},
-				experienceItem{"Contineu AI", "Full Stack Developer Intern"},
-			},
-			list.NewDefaultDelegate(),
-			width, height,
-		),
+		experiences,
 	}
 }
 
@@ -47,5 +53,9 @@ func (e Experience) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (e Experience) View() string {
-	return e.renderer.NewStyle().Render(e.experiences.View())
+	return lipgloss.PlaceHorizontal(
+		e.width,
+		lipgloss.Left,
+		e.experiences.View(),
+	)
 }

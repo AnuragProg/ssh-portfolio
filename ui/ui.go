@@ -1,10 +1,12 @@
 package ui
 
 import (
+	"github.com/AnuragProg/ssh-portfolio/ui/contact"
 	"github.com/AnuragProg/ssh-portfolio/ui/experience"
 	"github.com/AnuragProg/ssh-portfolio/ui/filler"
 	notfound "github.com/AnuragProg/ssh-portfolio/ui/not_found"
 	"github.com/AnuragProg/ssh-portfolio/ui/overview"
+	"github.com/AnuragProg/ssh-portfolio/ui/project"
 	"github.com/charmbracelet/bubbles/cursor"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -53,6 +55,8 @@ func NewUI(renderer *lipgloss.Renderer, height, width int) UI {
 		ContentPageMap: map[ContentPage]tea.Model{
 			Overview: overview.NewOverview(renderer),
 			Experience: experience.NewExperience(renderer, ContentPageHeight, ContentPageWidth),
+			Projects: project.NewProject(renderer, ContentPageHeight, ContentPageWidth),
+			Contact: contact.NewContact(renderer, ContentPageHeight, ContentPageWidth),
 		},
 
 		height: height,
@@ -138,6 +142,7 @@ func (ui UI) View() string {
 	}
 
 	content := ui.renderer.NewStyle().
+		// PaddingLeft(5).
 		Height(ContentPageHeight).
 		Width(ContentPageWidth).
 		// Border(lipgloss.RoundedBorder()).
