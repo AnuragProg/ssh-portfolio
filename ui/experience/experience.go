@@ -1,45 +1,30 @@
 package experience
 
 import (
-	"github.com/charmbracelet/bubbles/list"
+	"github.com/AnuragProg/ssh-portfolio/ui/color"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
 type experienceItem struct {
-	title, desc string
+	companyName, role, from, to string
 }
-func (ei experienceItem) Title() string { return ei.title }
-func (ei experienceItem) Description() string { return ei.desc }
-func (ei experienceItem) FilterValue() string { return ei.title }
 
 type Experience struct {
-	renderer *lipgloss.Renderer
+	renderer      *lipgloss.Renderer
 	height, width int
-
-	// data to be shown
-	experiences list.Model
+	experiences   []experienceItem
 }
 
 func NewExperience(renderer *lipgloss.Renderer, height, width int) Experience {
-	experiences := list.New(
-		[]list.Item{
-			experienceItem{"QuickGhy", "Android Developer Intern"},
-			experienceItem{"ISOStats", "Full Stack Developer Intern"},
-			experienceItem{"Contineu AI", "Full Stack Developer Intern"},
-		},
-		list.NewDefaultDelegate(),
-		width, height,
-	)
-
-	experiences.SetShowHelp(false)
-	experiences.SetShowTitle(false)
-	experiences.SetShowStatusBar(false)
-
 	return Experience{
 		renderer,
 		height, width,
-		experiences,
+		[]experienceItem{
+			{"quickghy", "android developer intern", "sep/2022", "feb/2023"},
+			{"isostats", "full stack developer intern", "apr/2023", "aug/2023"},
+			{"contineu.ai", "full stack developer intern", "may/2023", "present"},
+		},
 	}
 }
 
@@ -47,15 +32,42 @@ func (e Experience) Init() tea.Cmd {
 	return nil
 }
 func (e Experience) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-	e.experiences, cmd = e.experiences.Update(msg)
-	return e, cmd
+	return e, nil
 }
 
 func (e Experience) View() string {
-	return lipgloss.PlaceHorizontal(
+	view := make([]string, 0, len(e.experiences)*2) // INFO: * 2 so that space can be added between the experiences
+
+	roleStyle := e.renderer.NewStyle().
+		Foreground(color.White)
+	fromToStyle := e.renderer.NewStyle().
+		Foreground(color.Gray)
+	companyNameStyle := e.renderer.NewStyle().
+		Foreground(color.Gray)
+
+	for idx, experience := range e.experiences {
+		view = append(
+			view,
+			lipgloss.JoinVertical(
+				lipgloss.Left,
+				roleStyle.Render(experience.role),
+				companyNameStyle.Render(experience.companyName),
+				fromToStyle.Render(lipgloss.JoinHorizontal(lipgloss.Left, experience.from, ":", experience.to)),
+			),
+		)
+		if idx != len(e.experiences) -1 {
+			view = append(view, "")
+		}
+	}
+
+	return lipgloss.Place(
 		e.width,
-		lipgloss.Left,
-		e.experiences.View(),
+		e.height,
+		lipgloss.Center,
+		lipgloss.Center,
+		lipgloss.JoinVertical(
+			lipgloss.Left,
+			view...,
+		),
 	)
 }

@@ -50,7 +50,7 @@ func (nb NavBar) View() string {
 	navbar := []string{}
 	for idx, contentPage := range ContentPages {
 		if idx == nb.SelectedNavItemIdx {
-			navbar = append(navbar, nb.navItemStyle.Copy().AlignHorizontal(lipgloss.Right).SetString("-> "+string(contentPage)).Render())
+			navbar = append(navbar, nb.navItemStyle.Copy().AlignHorizontal(lipgloss.Right).SetString("-> "+nb.renderer.NewStyle().Underline(true).Render(string(contentPage))).Render())
 		} else {
 			navbar = append(navbar, nb.navItemStyle.Copy().AlignHorizontal(lipgloss.Right).SetString(string(contentPage)).Render())
 		}

@@ -20,10 +20,10 @@ const (
 type ContentPage string
 
 const (
-	Overview   = "overview"
-	Experience = "experience"
-	Projects   = "projects"
-	Contact    = "contact"
+	Overview   = "   overview"
+	Experience = " experience"
+	Projects   = "   projects"
+	Contact    = "    contact"
 )
 
 var ContentPages = [4]ContentPage{Overview, Experience, Projects, Contact}

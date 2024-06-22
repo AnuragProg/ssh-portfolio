@@ -29,7 +29,7 @@ func (k KeyMap) ShortHelp() []key.Binding {
 func (k KeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.Up, k.Down},
-		{k.ContentPageUp, k.ContentPageDown},
+		// {k.ContentPageUp, k.ContentPageDown},
 		{k.Help, k.Quit},
 	}
 }

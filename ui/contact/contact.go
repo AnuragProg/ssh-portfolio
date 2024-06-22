@@ -1,9 +1,20 @@
 package contact
 
 import (
+	"github.com/AnuragProg/ssh-portfolio/ui/color"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
+
+type SocialLink struct {
+	tag, link string
+}
+
+// INFO: The tags must be equal in length to make the ui not look weird
+var socialLinks = []SocialLink{
+	{"github  ", "https://github.com/AnuragProg"},	
+	{"linkedin", "https://www.linkedin.com/in/anurag-singh-bisht"},	
+}
 
 type Contact struct {
 	renderer      *lipgloss.Renderer
@@ -34,5 +45,37 @@ func (c Contact) View() string {
 ███████║██║  ██║   ██║       ██║  ██║╚██████╔╝███████╗██║  ██║
 ╚══════╝╚═╝  ╚═╝   ╚═╝       ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝
 	`
-	return title
+	
+
+	tagStyle := c.renderer.NewStyle()
+	linkStyle := c.renderer.NewStyle().
+		Foreground(color.LightBlue).
+		Underline(true).
+		PaddingTop(1)
+
+	links := []string{}
+	for _, socialLink := range socialLinks {
+		tag := socialLink.tag
+		link := socialLink.link
+		links = append(
+			links,
+			lipgloss.JoinHorizontal(lipgloss.Center, tagStyle.Render(tag), " - ", linkStyle.Render(link)),
+		)
+	}
+
+	content := lipgloss.JoinVertical(
+		lipgloss.Left,
+		links...,
+	)
+	return lipgloss.JoinVertical(
+		lipgloss.Center,
+		lipgloss.Place(
+			c.width,
+			lipgloss.Height(title),
+			lipgloss.Center,
+			lipgloss.Center,
+			title,
+		),
+		content,
+	)
 }
