@@ -2,4 +2,9 @@
 
 
 ### Screenshot
-![landing-image](./landing-image.png)
+![landing-image](./assets/landing-image.png)
+
+
+### Demo
+![demo](./assets/ssh-portfolio-demo.gif)
+

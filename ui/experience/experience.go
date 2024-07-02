@@ -23,7 +23,7 @@ func NewExperience(renderer *lipgloss.Renderer, height, width int) Experience {
 		[]experienceItem{
 			{"quickghy", "android developer intern", "sep/2022", "feb/2023"},
 			{"isostats", "full stack developer intern", "apr/2023", "aug/2023"},
-			{"contineu.ai", "full stack developer intern", "may/2023", "present"},
+			{"contineu.ai", "backend intern", "may/2023", "present"},
 		},
 	}
 }
